@@ -1,4 +1,4 @@
-import { GoogleAuthProvider, GithubAuthProvider , getAuth, signInWithPopup } from "firebase/auth";
+import { GoogleAuthProvider, GithubAuthProvider, getAuth, signInWithPopup, signOut } from "firebase/auth";
 import logo from './logo.svg';
 import './App.css';
 import initializeAuthentication from './Firebase/firebase.initialization';
@@ -23,26 +23,44 @@ function App() {
         }
         setUser(logedInUsers)
 
+      }).catch((error) => {
+        const errorMessage = error.message;
+        console.log(errorMessage);
       })
   }
-  const signInGithubHandler=()=>{
+  const signInGithubHandler = () => {
     const auth = getAuth();
-  signInWithPopup(auth, githubProvider)
-  .then(result =>{
-    const {displayName,photoURL} = result.user;
-    const logedInUsers = {
-      name:displayName,
-      photo:photoURL
-    }
-    setUser(logedInUsers);
-    
-  })
+    signInWithPopup(auth, githubProvider)
+      .then(result => {
+        const { displayName, photoURL } = result.user;
+        const logedInUsers = {
+          name: displayName,
+          photo: photoURL
+        }
+        setUser(logedInUsers);
+
+      }).catch((error) => {
+        const errorMessage = error.message;
+        console.log(errorMessage);
+      })
+  }
+  const signOutHandler = () => {
+    const auth = getAuth();
+    signOut(auth).then(() => {
+      setUser({});
+    })
+
   }
   return (
     <div className='custom'>
       <div>
-        <button onClick={signInGoogleHandler}>Google SignIn</button>
-        <button onClick={signInGithubHandler}>Github SignIn</button>
+       { !user.name? <div>
+          <button onClick={signInGoogleHandler}>Google SignIn</button>
+          <button onClick={signInGithubHandler}>Github SignIn</button>
+        </div> :
+        <div>
+          <button onClick={signOutHandler}>Sign Out</button>
+        </div>}
       </div>
       <div>
 
